@@ -1,0 +1,50 @@
+﻿@model IEnumerable<TutorialMonthlyCalendarAspNetCore.Models.Package>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .table {
+        max-width: 1750px;
+        margin: auto;
+        background-color: #303030;
+    }
+</style>
+
+<h2>Index</h2>
+
+<table class="table">
+    <thead style="color: whitesmoke">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PackageName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CountPackage)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody class="table-light">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PackageName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CountPackage)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<div>
+    <a asp-action="Create" style="color: whitesmoke; padding-left: 100px;">Create New</a>    
+</div>

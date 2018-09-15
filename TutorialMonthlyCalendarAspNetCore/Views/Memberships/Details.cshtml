@@ -1,0 +1,116 @@
+﻿@model TutorialMonthlyCalendarAspNetCore.Models.Memberships
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .container {
+        max-width: 500px;
+        margin: auto;
+        color: whitesmoke;
+        background-color: #303030;
+    }
+</style>
+<style>
+    .table {
+        max-width: 1750px;
+        margin: auto;
+        background-color: #303030;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            type: 'GET',
+            url: '/api/events/GetMemebershipDetailsPackage',
+            data: { membershipNumber:  '@Html.Raw(Model.Id)'},
+            success: function (response) {
+                console.log(response);
+                var trHTML = '<tbody class="table-light">';
+                $.each(JSON.parse(response), function (i, item) {
+                    var hreflink = "http://localhost:50561/MembershipPackages/Edit/?membershipNumber=" +
+                        item.MembershipId +
+                        "&packageNumber=" +
+                        item.PackageId;
+                    trHTML += '<tr><td>' + item.PackageName + '</td><td>' + item.PackageCount +
+                        '</td><td><a href='+hreflink+'><span>Update</span></a></td></tr>';
+                });
+                trHTML += '</table>';
+                $('#added-articles').append(trHTML);
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+        });
+
+    });
+</script>
+
+<h2>Details</h2>
+
+<div>
+    <h4>Memberships</h4>
+    <hr />
+<div class="container" style="padding: 25px;">
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Package)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Package)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EmergencyName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EmergencyName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EmergencyContact)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EmergencyContact)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Notes)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Notes)
+        </dd>
+    </dl>
+  </div>
+    <div style="padding: 50px"></div>
+    <div >
+        <table id="added-articles" class="table">
+            <tr style="color: whitesmoke">
+                <th>Package</th>
+                <th>Count</th>
+                <th></th>
+            </tr>
+        </table>
+    </div>
+</div>
+<div style="color: whitesmoke; padding-left: 100px">
+    <a asp-action="Edit" style="color: whitesmoke" asp-route-id="@Model.Id">Edit</a> | <a style="color: whitesmoke" asp-action="Index">Back to List</a>
+</div>

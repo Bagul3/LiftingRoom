@@ -1,0 +1,49 @@
+﻿@model TutorialMonthlyCalendarAspNetCore.Models.Package
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .container {
+        max-width: 500px;
+        margin: auto;
+        color: whitesmoke;
+        background-color: #303030;
+    }
+</style>
+
+<h2>Edit</h2>
+
+<h4>Package</h4>
+<hr />
+<div class="container" style="padding: 25px;">
+    <div class="form-group">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="PackageName" class="control-label"></label>
+                <input asp-for="PackageName" class="form-control" />
+                <span asp-validation-for="PackageName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CountPackage" class="control-label"></label>
+                <input asp-for="CountPackage" class="form-control" />
+                <span asp-validation-for="CountPackage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

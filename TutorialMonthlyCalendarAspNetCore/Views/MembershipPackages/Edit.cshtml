@@ -1,0 +1,54 @@
+﻿@model TutorialMonthlyCalendarAspNetCore.Models.MembershipPackage
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .container {
+        max-width: 500px;
+        margin: auto;
+        color: whitesmoke;
+        background-color: #303030;
+    }
+</style>
+
+<h2>Edit</h2>
+
+<h4>Package</h4>
+<hr />
+<div class="container" style="padding: 25px;">
+    <div class="form-group">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="MembershipId" class="control-label"></label>
+                <input asp-for="MembershipId" class="form-control" />
+                <span asp-validation-for="MembershipId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PackageCount" class="control-label"></label>
+                <input asp-for="PackageCount" class="form-control" />
+                <span asp-validation-for="PackageCount" class="text-danger"></span>
+            </div>
+            <div class="form-group" hidden="hidden">
+                <label asp-for="PackageId" class="control-label"></label>
+                <input asp-for="PackageId" class="form-control" />
+                <span asp-validation-for="PackageId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

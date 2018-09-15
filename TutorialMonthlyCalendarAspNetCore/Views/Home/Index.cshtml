@@ -1,0 +1,269 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<script src="~/js/daypilot/daypilot-all.min.js" asp-append-version="true"></script>
+<link href="icons/style.css" rel="stylesheet" type="text/css">
+
+<div class="main">
+    <div style="float:left; width: 150px;">
+        <div id="nav"></div>
+    </div>
+    <div style="margin-left: 150px;">
+        <div class="navi">
+            <button id="previous">&laquo;</button>
+            <button id="today">Today</button>
+            <button id="next">&raquo;</button>
+        </div>
+        <div id="dp"></div>
+    </div>
+</div>
+
+<div>
+    <a href="http://localhost:50561/memberships"><input type="button" value="Membership"></a>
+    <a href="http://localhost:50561/packages"><input type="button" value="Packages"/></a>
+</div>
+
+<script>
+
+    var number;
+    var membershipName;
+    var name;
+    var package;
+    var packageName;
+
+    var nav = new DayPilot.Navigator("nav");
+    nav.showMonths = 5;
+    nav.skipMonths = 5;
+    nav.selectMode = "month";
+    nav.onTimeRangeSelected = function (args) {
+        dp.startDate = args.day;
+        dp.update();
+        dp.events.load("/api/events");
+    };
+    nav.init();
+
+    function changeDropdown() {
+        number = $("#sel1").val();
+        membershipName = document.getElementById('sel1').selectedOptions[0].text;
+        $.ajax({
+            type: 'GET',
+            url: '/api/events/GetMembersPackage',
+            data: {membershipNumber:number},
+            success: function (data) {
+                var sel = $("#package");
+                sel.empty();
+                data = jQuery.parseJSON(data);
+                sel.append('<option value="none">None</option>');
+                for (var i = 0; i < data.length; i++) {
+                    sel.append('<option value="' + data[i].Id + '">' + data[i].PackageName + '</option>');
+                }
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+        });
+    } 
+
+    function changePackage() {
+        package = $("#package").val();
+        packageName = document.getElementById('package').selectedOptions[0].text;
+    }
+
+//    data: {
+//        calEvent: JSON.stringify(params), memebershipNumber: $("#sel1").val() },
+
+    var dp = new DayPilot.Month("dp");
+    dp.onTimeRangeSelected = function (args) {
+        DayPilot.Modal.prompt("Create a new event:", "Event").then(function (modal) {
+            var dp = args.control;
+            dp.clearSelection();
+            if (!modal.result) {
+                return;
+            }
+
+            if (typeof number === "undefined") {
+                number = $("#sel1").val();
+                membershipName = document.getElementById('sel1').selectedOptions[0].text;
+            }
+
+            if (typeof package === "undefined") {
+                package = $("#package").val();
+                packageName = document.getElementById('package').selectedOptions[0].text;
+            }
+
+            var params = {
+                start: args.start.toString(),
+                end: args.end.toString(),
+                text: modal.result,
+                resource: args.resource,
+                membershipNumber: number,
+                membershipName: membershipName,
+                packageName: packageName,
+                packageNumber : package
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/api/events',
+                data: JSON.stringify(params),
+                success: function (data) {
+                    dp.events.add(new DayPilot.Event(data));
+                    dp.message("Event created");
+                },
+                error: function(data) {
+                    dp.message("No packages left");
+                },
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json'
+            });
+        }); 
+        $(".modal_default_inner").append("<div> <label for='sel1'>Select Member:</label> <select class='selectpicker' data-show-subtext='true' data-live-search='true' id='sel1' onchange='changeDropdown();'> </select> </div>");
+        $.ajax({
+            type: 'GET',
+            url: '/api/events/GetMembers',
+            success: function (data) {
+                var sel = $("#sel1");
+                sel.empty();
+                sel.append('<option value="none">None</option>');
+                for (var i=0; i<data.length; i++) {
+                    sel.append('<option value="' + data[i].id + '">' + data[i].name + '</option>');
+                }
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+        });
+        $(".modal_default_inner").append("<div> <label for='package'>Select Package:</label> <select class='selectpicker' data-show-subtext='true' data-live-search='true' id='package' onchange='changePackage();'> </select> </div>");
+        
+    };
+    dp.onEventMove = function (args) {
+        var params = {
+            id: args.e.id(),
+            start: args.newStart.toString(),
+            end: args.newEnd.toString()
+        };
+        $.ajax({
+            type: 'PUT',
+            url: '/api/events/' + args.e.id() + "/move",
+            data: JSON.stringify(params),
+            success: function (data) {
+                dp.message("Event moved");
+            },
+            contentType: "application/json",
+            dataType: 'json'
+        });
+    };
+    dp.onEventResize = function (args) {
+        var params = {
+            id: args.e.id(),
+            start: args.newStart.toString(),
+            end: args.newEnd.toString()
+        };
+        $.ajax({
+            type: 'PUT',
+            url: '/api/events/' + args.e.id() + "/move",
+            data: JSON.stringify(params),
+            success: function (data) {
+                dp.message("Event resized");
+            },
+            contentType: "application/json",
+            dataType: 'json'
+        });
+    };
+    dp.onBeforeEventRender = function (args) {
+        args.data.backColor = args.data.color;
+        args.data.areas = [
+            { top: 3, right: 3, bottom: 3, icon: "icon-triangle-down", visibility: "Hover", action: "ContextMenu", style: "font-size: 12px; background-color: rgba(255, 255, 255, .5); border: 1px solid #aaa; padding: 3px; cursor:pointer;" }
+        ];
+    };
+    dp.contextMenu = new DayPilot.Menu({
+        items: [
+            {
+                text: "Delete",
+                onClick: function (args) {
+                    var e = args.source;
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '/api/events/' + e.id(),
+                        success: function (data) {
+                            dp.events.remove(e);
+                            dp.message("Event deleted");                            
+                        },
+                        contentType: "application/json",
+                        dataType: 'json'
+                    });
+                }
+            },
+            {
+                text: "-"
+            },
+            {
+                text: "Blue",
+                icon: "icon icon-blue",
+                color: "#a2c4c9",
+                onClick: function (args) { updateColor(args.source, args.item.color); }
+            },
+            {
+                text: "Green",
+                icon: "icon icon-green",
+                color: "#b6d7a8",
+                onClick: function (args) { updateColor(args.source, args.item.color); }
+            },
+            {
+                text: "Yellow",
+                icon: "icon icon-yellow",
+                color: "#ffe599",
+                onClick: function (args) { updateColor(args.source, args.item.color); }
+            },
+            {
+                text: "Red",
+                icon: "icon icon-red",
+                color: "#ea9999",
+                onClick: function (args) { updateColor(args.source, args.item.color); }
+            },
+            {
+                text: "Auto",
+                color: "auto",
+                onClick: function (args) { updateColor(args.source, args.item.color); }
+            },
+        ]
+    });
+    dp.init();
+
+    dp.events.load("/api/events");
+
+
+    function updateColor(e, color) {
+        var params = {
+            color: color
+        };
+        $.ajax({
+            type: 'PUT',
+            url: '/api/events/' + e.id() + '/color',
+            data: JSON.stringify(params),
+            success: function (data) {
+                e.data.color = color;
+                dp.events.update(e);
+                dp.message("Color updated");
+            },
+            contentType: "application/json",
+            dataType: 'json'
+        });
+    }
+
+    $(document).ready(function () {
+
+        $("#previous").click(function () {
+            nav.select(nav.selectionDay.addMonths(-1));
+        });
+
+        $("#today").click(function () {
+            nav.select(DayPilot.Date.today());
+        });
+
+        $("#next").click(function () {
+            nav.select(nav.selectionDay.addMonths(1));
+        });
+
+        
+    });
+    
+</script>

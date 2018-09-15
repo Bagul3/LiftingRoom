@@ -1,0 +1,30 @@
+﻿@model TutorialMonthlyCalendarAspNetCore.Models.Package
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Package</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.PackageName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.PackageName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CountPackage)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CountPackage)
+        </dd>
+    </dl>
+</div>
+<div style="color: whitesmoke; padding-left: 75px">
+    <a asp-action="Edit" style="color: whitesmoke" asp-route-id="@Model.Id">Edit</a> | <a style="color: whitesmoke" asp-action="Index">Back to List</a>
+</div>

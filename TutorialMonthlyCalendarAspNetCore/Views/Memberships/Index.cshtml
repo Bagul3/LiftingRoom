@@ -1,0 +1,80 @@
+﻿@model IEnumerable<TutorialMonthlyCalendarAspNetCore.Models.Memberships>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .table {
+        max-width: 1750px;
+        margin: auto;
+        background-color: #303030;
+    }
+</style>
+
+<h2>Members</h2>
+
+<table class="table">
+    <thead style="color: whitesmoke">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Phone)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Package)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmergencyName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EmergencyContact)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Notes)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody class="table-light">
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Package)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmergencyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmergencyContact)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<div style="padding-left: 80px;padding-top: 15px">
+    <a href="http://localhost:50561/memberships/Create"><input type="button" value="Create Member bro"/></a>
+</div>
